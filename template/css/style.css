@@ -1,7 +1,19 @@
+.form-lang {
+	padding-top: 14px;
+}
+.form-lang label {
+	margin-right: 5px;
+}
+
 .errors {
     width: 100%;
     min-height: 20px;
+    color: red;
 }
 img {
 	max-width: 100%;
+}
+.photo-image {
+	width: 320px;
+	max-width: 100%;	
 }

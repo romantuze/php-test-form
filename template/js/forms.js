@@ -5,16 +5,7 @@ $(document).ready(function() {
 		}
 		var json;
 		event.preventDefault();
-		$('.errors').html('');
-		if ($(this).find('.input-login').val() == '') {
-			$('.errors').html('Заполните поле логин');
-
-		} else if($(this).find('.input-password').val() == '') {
-			$('.errors').html('Заполните поле пароль');
-		}
- 		else {
-
-
+		$('.errors').html('');		
 		$.ajax({
 			type: $(this).attr('method'),
 			url: $(this).attr('action'),
@@ -27,15 +18,11 @@ $(document).ready(function() {
 				if (json.url) {
 					window.location.href = '/' + json.url;
 				} else {
-					//alert(json.status + ' - ' + json.message);
 					$('.errors').html(json.message)
 				}
 			},
-		});
-
-		}
+		});		
 	});
-
 
 	$('.form-reg').submit(function(event) {
 		if ($(this).attr('id') == 'no_ajax') {
@@ -44,21 +31,6 @@ $(document).ready(function() {
 		var json;
 		event.preventDefault();
 		$('.errors').html('');
-		if ($(this).find('.input-email').val() == '') {
-			$('.errors').html('Заполните поле email');
-		} 
-		else if($(this).find('.input-login').val() == '') {
-			$('.errors').html('Заполните поле логин');
-		}
-		else if($(this).find('.input-fio').val() == '') {
-			$('.errors').html('Заполните поле ФИО');
-		}
-		else if($(this).find('.input-password').val() == '') {
-			$('.errors').html('Заполните поле пароль');
-		}		
- 		else {
-
-
 		$.ajax({
 			type: $(this).attr('method'),
 			url: $(this).attr('action'),
@@ -70,14 +42,25 @@ $(document).ready(function() {
 				json = jQuery.parseJSON(result);
 				if (json.url) {
 					window.location.href = '/' + json.url;
-				} else {
-					//alert(json.status + ' - ' + json.message);
+				} 
+				else if (json.status == 'success') {
+					$('.form-input').val('');
+					$('.errors').html(json.message);
+				}
+				else {					
 					$('.errors').html(json.message);
 				}
 			},
-		});
-
-		}
+		});	
 	});
+
+	$('.select-lang').change(function() {
+		var language;			
+		language = $('.select-lang').val();
+		$.post( "/lang", { lang: language } ).done(function( ) {
+		   location.reload(true);
+		});		
+	});
+
 
 });

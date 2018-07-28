@@ -13,19 +13,19 @@ class User extends Model
         $rules = [
             'email'    => [
                 'pattern' => '#^([a-z0-9_.-]{1,20}+)@([a-z0-9_.-]+)\.([a-z\.]{2,10})$#',
-                'message' => 'E-mail адрес указан неверно',
+                'message' => LANG_ERROR_EMAIL,
             ],
             'login'    => [
                 'pattern' => '#^[a-z0-9]{3,15}$#',
-                'message' => 'Логин указан неверно (разрешены только латинские буквы и цифры от 3 до 15 символов)',
+                'message' => LANG_ERROR_LOGIN,
             ],
             'password' => [
                 'pattern' => '#^[a-zA-Z0-9]{6,30}$#',
-                'message' => 'Пароль указан неверно (разрешены только латинские буквы и цифры от 6 до 30 символов)',
+                'message' => LANG_ERROR_PAS,
             ],
             'fio'      => [
-                'pattern' => '#^[а-яА-Я\s]{3,50}$#',
-                'message' => 'ФИО указано неверно (разрешены только латинские буквы и цифры от 3 до 50 символов)',
+                'pattern' => '#^[a-zA-Zа-яА-Я\s]{3,50}$#',
+                'message' => LANG_ERROR_FIO,
             ],
         ];
 
@@ -43,7 +43,13 @@ class User extends Model
         $params = [
             'email' => $email,
         ];
-        return $this->db->column('SELECT id FROM users WHERE email = :email', $params);
+        $result = $this->db->column('SELECT id FROM users WHERE email = :email', $params);
+        if ($result) {
+            $this->error = LANG_EXISTS_EMAIL;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function checkLoginExists($login)
@@ -52,7 +58,7 @@ class User extends Model
             'login' => $login,
         ];
         if ($this->db->column('SELECT id FROM users WHERE login = :login', $params)) {
-            $this->error = 'Этот логин уже используется';
+            $this->error = LANG_EXISTS_LOGIN;
             return false;
         }
         return true;
@@ -106,18 +112,18 @@ class User extends Model
     public function validateImage($files)
     {
 
-        if (isset($files['photo'])) {
+        if (!empty($files['photo'])) {
 
             $photo_extensions = ['gif', 'jpg', 'png'];
 
             if (!$photo_info = $this->getImageInfo($files['photo']['tmp_name']) or !in_array($photo_info['extension'], $photo_extensions)) {
-                $this->error = 'Ошибка загрузки изображения';
+                $this->error = LANG_ERROR_IMAGE;
                 return false;
             } else {
                 $upload_file_name = uniqid(null, true) . '.' . $photo_info['extension'];
 
                 if (!@move_uploaded_file($files['photo']['tmp_name'], 'upload/' . $upload_file_name)) {
-                    $this->error = 'Ошибка загрузки изображения';
+                    $this->error = LANG_ERROR_IMAGE;
                     return false;
                 } else {
                     $this->photoname = $upload_file_name;
@@ -160,6 +166,7 @@ class User extends Model
         ];
         $hash = $this->db->column('SELECT password FROM users WHERE login = :login', $params);
         if (!$hash or !password_verify($pas, $hash)) {
+            $this->error = LANG_WRONG_LR;
             return false;
         }
         return true;

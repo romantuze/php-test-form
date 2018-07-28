@@ -17,4 +17,8 @@ return [
 		'controller' => 'user',
 		'action' => 'logout',
 	],
+	'lang' => [
+		'controller' => 'user',
+		'action' => 'lang',
+	],
 ];

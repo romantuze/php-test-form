@@ -22,8 +22,11 @@ class View
         if (file_exists($path)) {
             ob_start();
             require $path;
+
             $content = ob_get_clean();
+
             require 'views/layouts/' . $this->layout . '.php';
+
         }
     }
 
@@ -46,10 +49,6 @@ class View
     public static function errorCode($code)
     {
         http_response_code($code);
-        $path = 'views/errors/' . $code . '.php';
-        if (file_exists($path)) {
-            require $path;
-        }
         exit;
     }
 }

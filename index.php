@@ -9,5 +9,8 @@ spl_autoload_register(function ($class) {
 });
 
 session_start();
+if (!isset($_SESSION['lang'])) $_SESSION['lang'] = 'rus';
+$lang = 'languages/' . $_SESSION['lang'] . '.php';
+require $lang;
 $router = new Router;
 $router->start();

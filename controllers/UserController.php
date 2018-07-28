@@ -13,13 +13,13 @@ class UserController extends Controller
                 $this->view->message('error', $this->model->error);
             }
             if (!$this->model->checkData($_POST['login'], $_POST['password'])) {
-                $this->view->message('error', 'Логин или пароль указан не верно');
+                $this->view->message('error', $this->model->error);
             }
             $this->model->login($_POST['login']);
             $this->view->location('profile');
         }
 
-        $this->view->render('Вход');
+        $this->view->render(LANG_LOGIN);
     }
 
     public function signupAction()
@@ -29,19 +29,16 @@ class UserController extends Controller
             if (!$this->model->validate(['email', 'login', 'fio', 'password'], $_POST)) {
                 $this->view->message('error', $this->model->error);
             } elseif ($this->model->checkEmailExists($_POST['email'])) {
-                $this->view->message('error', 'Этот E-mail уже используется');
-
+                $this->view->message('error', $this->model->error);
             } elseif (!$this->model->checkLoginExists($_POST['login'])) {
                 $this->view->message('error', $this->model->error);
             } elseif (!$this->model->validateImage($_FILES)) {
                 $this->view->message('error', $this->model->error);
             }
-
             $this->model->reg($_POST);
-            $this->view->message('success', 'Регистрация завершена');
+            $this->view->message('success', LANG_FINISH);
         }
-
-        $this->view->render('Регистрация');
+        $this->view->render(LANG_REGISTRATION);
     }
 
     public function profileAction()
@@ -50,7 +47,7 @@ class UserController extends Controller
             $vars = [
                 'user' => $_SESSION['user'],
             ];
-            $this->view->render('Профиль', $vars);
+            $this->view->render(LANG_PROFILE, $vars);
         } else {
             $this->view->redirect('');
         }
@@ -61,6 +58,17 @@ class UserController extends Controller
         unset($_SESSION['user']);
         $this->view->render('Выход');
         $this->view->redirect('');
+    }
+
+    public function langAction()
+    {
+        if (!empty($_POST['lang'])) {
+            if ($_POST['lang'] == 'rus') {
+                $_SESSION['lang'] = 'rus';
+            } else if ($_POST['lang'] == 'eng') {
+                $_SESSION['lang'] = 'eng';
+            }
+        }
     }
 
 }
